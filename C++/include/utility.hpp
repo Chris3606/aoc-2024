@@ -21,6 +21,8 @@ namespace aoc
 
         return map;
     }
+
+    std::vector<int> to_ints(const std::string &space_delimited_ints);
     // class Token : std::string
     // {
     // public:

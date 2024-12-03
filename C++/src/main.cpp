@@ -1,12 +1,14 @@
 #include "day.hpp"
 #include "day00/solution.hpp"
 #include "day01/solution.hpp"
+#include "day02/solution.hpp"
 #include <iostream>
 #include <vector>
 
 std::vector<aoc::DayBase *> days{
     new aoc::Day00(),
     new aoc::Day01(),
+    new aoc::Day02(),
 };
 
 int main(int argc, const char *argv[])

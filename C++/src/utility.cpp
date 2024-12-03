@@ -1,7 +1,19 @@
 #include "utility.hpp"
+#include <sstream>
 
 namespace aoc
 {
+    std::vector<int> to_ints(const std::string &space_delimited_ints)
+    {
+        std::vector<int> result;
+        std::stringstream ss(space_delimited_ints);
+
+        int n;
+        while (ss >> n)
+            result.push_back(n);
+
+        return result;
+    }
     // Token::Token(char sep) : m_sep(sep)
     // {
     // }
