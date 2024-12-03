@@ -1,16 +1,19 @@
 #include "utility.hpp"
+#include <iostream>
 #include <sstream>
+#include <string>
 
 namespace aoc
 {
-    std::vector<int> to_ints(const std::string &space_delimited_ints)
+    std::vector<int> parse_ints(const std::string &delimited_ints,
+                                char delimeter)
     {
         std::vector<int> result;
-        std::stringstream ss(space_delimited_ints);
+        std::stringstream ss(delimited_ints);
 
-        int n;
-        while (ss >> n)
-            result.push_back(n);
+        std::string n_data;
+        while (std::getline(ss, n_data, delimeter))
+            result.push_back(std::stoi(n_data));
 
         return result;
     }
@@ -28,6 +31,26 @@ namespace aoc
             matches.push_back(*it++);
 
         return matches;
+    }
+
+    int wrap_around(int num, int wrap_to)
+    {
+        return (num % wrap_to + wrap_to) % wrap_to;
+    }
+
+    aoc::grid::ArrayView<char> get_grid(std::istream &grid_data)
+    {
+        std::vector<char> vec;
+        size_t width = 0;
+
+        std::string line;
+        while (std::getline(grid_data, line))
+        {
+            width = line.size();
+            vec.insert(vec.end(), line.begin(), line.end());
+        }
+
+        return aoc::grid::ArrayView<char>(std::move(vec), width);
     }
     // Token::Token(char sep) : m_sep(sep)
     // {

@@ -3,6 +3,7 @@
 
 namespace aoc
 {
+
     bool is_safe(const std::vector<int> report)
     {
         int min_diff = 1;
@@ -66,7 +67,7 @@ namespace aoc
         InputType result;
 
         while (std::getline(input_file, line, '\n'))
-            result.push_back(to_ints(line));
+            result.push_back(parse_ints(line, ' '));
 
         return result;
     }

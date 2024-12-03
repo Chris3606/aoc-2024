@@ -37,7 +37,7 @@ namespace aoc
         return result;
     }
 
-    Day01::Solution1Type Day01::part1([[maybe_unused]] const InputType &input)
+    Day01::Solution1Type Day01::part1(const InputType &input)
     {
         int dist = 0;
         auto v1 = std::get<0>(input);
@@ -53,7 +53,7 @@ namespace aoc
         return dist;
     }
 
-    Day01::Solution2Type Day01::part2([[maybe_unused]] const InputType &input)
+    Day01::Solution2Type Day01::part2(const InputType &input)
     {
         int similarity_score = 0;
         auto v1 = std::get<0>(input);

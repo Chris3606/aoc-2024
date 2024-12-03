@@ -3,6 +3,8 @@
 #include "day01/solution.hpp"
 #include "day02/solution.hpp"
 #include "day03/solution.hpp"
+#include "day04/solution.hpp"
+#include "day05/solution.hpp"
 #include <iostream>
 #include <vector>
 
@@ -11,6 +13,8 @@ std::vector<aoc::DayBase *> days{
     new aoc::Day01(),
     new aoc::Day02(),
     new aoc::Day03(),
+    new aoc::Day04(),
+    new aoc::Day05(),
 };
 
 int main(int argc, const char *argv[])
