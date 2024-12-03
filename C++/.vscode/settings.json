@@ -1,0 +1,7 @@
+{
+    "C_Cpp.autoAddFileAssociations": false,
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "cmake.useCMakePresets": "always",
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "editor.formatOnSave": true,
+}

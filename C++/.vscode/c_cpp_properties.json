@@ -1,0 +1,41 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/include"
+            ],
+            "defines": [],
+            "compilerPath": "~/.zvm/bin/zig c++",
+            "compilerArgs": [
+                "-Werror",
+                "-Wpedantic",
+                "-Wextra",
+                "-Wall"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-clang-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        },
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/include"
+            ],
+            "defines": [],
+            "compilerPath": "C:/Users/cridl/.zvm/bin/zig.exe c++",
+            "compilerArgs": [
+                "-Werror",
+                "-Wpedantic",
+                "-Wextra",
+                "-Wall"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "windows-clang-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
