@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <math.h>
 #include <sstream>
-#include <unordered_map>
 
 namespace aoc
 {

@@ -1,6 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <iostream>
+#include <regex>
 #include <string>
 #include <unordered_map>
 
@@ -21,6 +22,9 @@ namespace aoc
 
         return map;
     }
+
+    std::vector<std::smatch> get_matches(const std::string &input,
+                                         const std::regex &regex);
 
     std::vector<int> to_ints(const std::string &space_delimited_ints);
     // class Token : std::string

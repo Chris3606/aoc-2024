@@ -27,6 +27,35 @@ namespace aoc
 
         return safe;
     }
+
+    int check_reports(const std::vector<std::vector<int>> &reports,
+                      bool check_with_missing)
+    {
+        int safe_reports = 0;
+
+        for (auto &report : reports)
+        {
+            if (is_safe(report))
+                safe_reports++;
+            else if (check_with_missing)
+            {
+                for (size_t i = 0; i < report.size(); i++)
+                {
+                    std::vector<int> report_removed = report;
+                    report_removed.erase(report_removed.begin() + i);
+
+                    if (is_safe(report_removed))
+                    {
+                        safe_reports++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return safe_reports;
+    }
+
     Day02::Day02() : Day(2)
     {
     }
@@ -44,41 +73,11 @@ namespace aoc
 
     Day02::Solution1Type Day02::part1(const InputType &input)
     {
-        int safe_reports = 0;
-
-        for (auto &report : input)
-        {
-            if (is_safe(report))
-                safe_reports++;
-        }
-
-        return safe_reports;
+        return check_reports(input, false);
     }
 
-    Day02::Solution2Type Day02::part2([[maybe_unused]] const InputType &input)
+    Day02::Solution2Type Day02::part2(const InputType &input)
     {
-        int safe_reports = 0;
-
-        for (auto &report : input)
-        {
-            if (is_safe(report))
-                safe_reports++;
-            else
-            {
-                for (size_t i = 0; i < report.size(); i++)
-                {
-                    std::vector<int> report_removed = report;
-                    report_removed.erase(report_removed.begin() + i);
-
-                    if (is_safe(report_removed))
-                    {
-                        safe_reports++;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return safe_reports;
+        return check_reports(input, true);
     }
 } // namespace aoc

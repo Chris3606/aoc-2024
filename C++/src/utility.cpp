@@ -14,6 +14,21 @@ namespace aoc
 
         return result;
     }
+
+    std::vector<std::smatch> get_matches(const std::string &input,
+                                         const std::regex &regex)
+    {
+        std::regex_iterator<std::string::const_iterator> it(input.begin(),
+                                                            input.end(),
+                                                            regex);
+        std::regex_iterator<std::string::const_iterator> end;
+
+        std::vector<std::smatch> matches;
+        while (it != end)
+            matches.push_back(*it++);
+
+        return matches;
+    }
     // Token::Token(char sep) : m_sep(sep)
     // {
     // }
