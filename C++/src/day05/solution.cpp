@@ -44,31 +44,45 @@ namespace aoc
         return correct;
     }
 
-    void add_dependencies(
+    const std::vector<int> &get_dependencies(
         const std::vector<int> &orig_list,
-        std::vector<int> &cur_list,
+        std::unordered_map<int, std::vector<int>> &deps_cache,
         int dependency,
         const std::unordered_map<int, std::vector<int>> &rules)
     {
-        // Only packages actually in the original list matter.
-        if (std::find(orig_list.begin(), orig_list.end(), dependency) ==
-            orig_list.end())
-            return;
-
-        // There are dependencies; resolve them locally.
-        if (rules.find(dependency) != rules.end())
+        if (deps_cache.find(dependency) == deps_cache.end())
         {
-            // There are deps, so resolve all of those recursively.
-            for (auto &dep : rules.at(dependency))
-                add_dependencies(orig_list, cur_list, dep, rules);
+            // Only packages actually in the original list matter.
+            if (std::find(orig_list.begin(), orig_list.end(), dependency) ==
+                orig_list.end())
+            {
+                deps_cache[dependency] = std::vector<int>();
+                return deps_cache[dependency];
+            }
+
+            std::vector<int> deps;
+            // There are dependencies; resolve them locally.
+            if (rules.find(dependency) != rules.end())
+            {
+                // There are deps, so resolve all of those recursively.
+                for (auto &dep : rules.at(dependency))
+                {
+                    auto d =
+                        get_dependencies(orig_list, deps_cache, dep, rules);
+                    deps.insert(deps.end(), d.begin(), d.end());
+                }
+            }
+
+            // If there aren't dependencies, this is a base case so we'll just add it.
+            // Otherwise, we've resolved all our other dependencies, so add if it doesn't
+            // exist.
+            if (std::find(deps.begin(), deps.end(), dependency) == deps.end())
+                deps.push_back(dependency);
+
+            deps_cache[dependency] = std::move(deps);
         }
 
-        // If there aren't dependencies, this is a base case so we'll just add it.
-        // Otherwise, we've resolved all our other dependencies, so add if it doesn't
-        // exist.
-        if (std::find(cur_list.begin(), cur_list.end(), dependency) ==
-            cur_list.end())
-            cur_list.push_back(dependency);
+        return deps_cache[dependency];
     }
 
     std::vector<int> resolve_print_order(
@@ -76,8 +90,12 @@ namespace aoc
         const std::unordered_map<int, std::vector<int>> &rules)
     {
         std::vector<int> correct_list;
+        std::unordered_map<int, std::vector<int>> deps_cache;
         for (auto &item : manual)
-            add_dependencies(manual, correct_list, item, rules);
+        {
+            auto deps = get_dependencies(manual, deps_cache, item, rules);
+            correct_list.insert(correct_list.end(), deps.begin(), deps.end());
+        }
 
         return correct_list;
     }
