@@ -1,15 +1,13 @@
 #pragma once
 #include "day.hpp"
+#include "grid/array_view.hpp"
 #include "grid/point.hpp"
-#include <string>
-#include <unordered_set>
 
 namespace aoc
 {
-    class Day06 : public Day<std::tuple<aoc::grid::Point,
-                                        std::unordered_set<size_t>,
-                                        aoc::grid::Point>,
-                             size_t>
+    class Day06
+        : public Day<std::pair<aoc::grid::ArrayView<char>, aoc::grid::Point>,
+                     size_t>
     {
     public:
         Day06();

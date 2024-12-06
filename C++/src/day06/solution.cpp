@@ -1,36 +1,31 @@
 #include "day06/solution.hpp"
 #include "grid/direction.hpp"
+#include "utility.hpp"
 #include <optional>
-#include <unordered_map>
-#include <vector>
+#include <unordered_set>
 
 namespace aoc
 {
-    std::optional<std::unordered_set<size_t>> num_positions_until_exit(
-        const aoc::grid::Point &guard_start,
-        const std::unordered_set<size_t> &obstacles,
-        const aoc::grid::Point &map_size)
+    std::optional<std::unordered_set<size_t>> get_path_to_exit(
+        const aoc::grid::ArrayView<char> &grid,
+        const aoc::grid::Point &guard_start)
     {
-        if (obstacles.find(guard_start.to_index(map_size.x)) != obstacles.end())
-            throw std::runtime_error("Start :(");
         aoc::grid::Point cur_guard_pos = guard_start;
         aoc::grid::Direction guard_dir = aoc::grid::Direction::UP;
 
         std::unordered_set<size_t> visited;
-
-        int moves = 0;
-        while (cur_guard_pos.x >= 0 && cur_guard_pos.y >= 0 &&
-               cur_guard_pos.x < map_size.x && cur_guard_pos.y < map_size.y)
+        size_t moves = 0;
+        while (grid.contains(cur_guard_pos))
         {
-            auto pos_index = cur_guard_pos.to_index(map_size.x);
+            auto cur_guard_idx = cur_guard_pos.to_index(grid.width());
 
-            // Record this position
-            visited.insert(pos_index);
+            // Record this position as visited
+            visited.insert(cur_guard_idx);
 
-            // Turn 90 degrees until no obstacle
-            while (obstacles.find(
-                       (cur_guard_pos + guard_dir).to_index(map_size.x)) !=
-                   obstacles.end())
+            // Turn 90 degrees right until we are facing either a map edge (escape route) or a map
+            // square with no obstacle.
+            while (grid.contains(cur_guard_pos + guard_dir) &&
+                   grid[cur_guard_pos + guard_dir] == '#')
                 guard_dir = guard_dir + 2;
 
             // Proceed
@@ -39,14 +34,10 @@ namespace aoc
             // Cycle check (we could visit all cells from all directions in width * height * 4, so more than that
             // is a loop).
             ++moves;
-            if (moves >
-                map_size.x * map_size.y *
-                    static_cast<int>(aoc::grid::Direction::CARDINALS.size()))
+            if (moves > grid.width() * grid.height() *
+                            aoc::grid::Direction::CARDINALS.size())
                 return std::nullopt;
         }
-
-        if (visited.size() == 0)
-            throw std::runtime_error("Can't happen.");
 
         return visited;
     }
@@ -57,76 +48,51 @@ namespace aoc
 
     Day06::InputType Day06::parse_input(std::ifstream &input_file)
     {
-        size_t width = 0;
-        int y = 0;
-        std::string line;
 
-        // Want to use unordered set of point but haven't implemented hashing yet...
-        std::unordered_set<size_t> obstacles;
-        aoc::grid::Point guard_start;
+        auto grid = aoc::get_grid(input_file);
 
-        while (std::getline(input_file, line))
-        {
-            width = line.size();
-            for (size_t x = 0; x < line.size(); ++x)
+        aoc::grid::Point guard_start(-1, -1);
+        for (size_t i = 0; i < grid.width() * grid.height(); i++)
+            if (grid[i] == '^')
             {
-                switch (line[x])
-                {
-                case '#':
-                    obstacles.insert(
-                        aoc::grid::Point(x, y).to_index(line.size()));
-                    break;
-                case '^':
-                    guard_start = aoc::grid::Point(x, y);
-                    break;
-                }
+                grid[i] = '.';
+                guard_start = aoc::grid::Point::from_index(i, grid.width());
+                break;
             }
-            ++y;
-        }
 
-        return InputType(std::move(guard_start),
-                         std::move(obstacles),
-                         aoc::grid::Point(static_cast<int>(width), y));
+        if (guard_start.x == -1)
+            throw std::runtime_error("Failed to find guard starting position.");
+
+        return InputType(std::move(grid), guard_start);
     }
 
     Day06::Solution1Type Day06::part1(const InputType &input)
     {
-        return num_positions_until_exit(std::get<0>(input),
-                                        std::get<1>(input),
-                                        std::get<2>(input))
-            ->size();
+        return get_path_to_exit(input.first, input.second)->size();
     }
 
-    Day06::Solution2Type Day06::part2(const InputType &input)
+    Day06::Solution2Type Day06::part2([[maybe_unused]] const InputType &input)
     {
-        auto guard_start = std::get<0>(input);
-        auto obstacles = std::get<1>(input);
-        size_t s = obstacles.size();
-        auto size = std::get<2>(input);
-        auto path = *num_positions_until_exit(guard_start, obstacles, size);
+        // Copy grid so we can modify later for checking cycles; one copy now saves us path.size()
+        // copies later.
+        auto grid = input.first;
+        auto guard_start = input.second;
 
-        std::unordered_set<size_t> visited;
+        // Find original path followed
+        auto path = *get_path_to_exit(grid, guard_start);
+
+        // Find all potential loop options by trying to place an obstacle everywhere the guard visits,
+        // one square at a time, excluding the start. Then simply re-run the escape check.
         size_t loops_found = 0;
         for (auto &pos_idx : path)
         {
-            if (visited.find(pos_idx) != visited.end())
-                throw std::runtime_error("Broke hash set.");
-
-            visited.insert(pos_idx);
-
-            if (pos_idx == guard_start.to_index(size.x))
+            if (pos_idx == guard_start.to_index(input.first.width()))
                 continue;
 
-            if (obstacles.find(pos_idx) != obstacles.end())
-                throw std::runtime_error("Original path had obstacles...");
-
-            obstacles.insert(pos_idx);
-            if (!num_positions_until_exit(guard_start, obstacles, size))
+            grid[pos_idx] = '#';
+            if (!get_path_to_exit(grid, guard_start))
                 ++loops_found;
-
-            obstacles.erase(pos_idx);
-            if (obstacles.size() != s)
-                throw std::runtime_error("foo.");
+            grid[pos_idx] = '.';
         }
 
         return loops_found;
