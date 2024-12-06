@@ -1,30 +1,31 @@
 #include "day06/solution.hpp"
 #include "grid/direction.hpp"
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
 namespace aoc
 {
-    int num_positions_until_exit(const aoc::grid::Point &guard_start,
-                                 const std::unordered_set<size_t> &obstacles,
-                                 const aoc::grid::Point &map_size)
+    std::optional<std::unordered_set<size_t>> num_positions_until_exit(
+        const aoc::grid::Point &guard_start,
+        const std::unordered_set<size_t> &obstacles,
+        const aoc::grid::Point &map_size)
     {
+        if (obstacles.find(guard_start.to_index(map_size.x)) != obstacles.end())
+            throw std::runtime_error("Start :(");
         aoc::grid::Point cur_guard_pos = guard_start;
         aoc::grid::Direction guard_dir = aoc::grid::Direction::UP;
 
-        std::unordered_map<size_t, std::vector<aoc::grid::Direction>> visited;
+        std::unordered_set<size_t> visited;
 
+        int moves = 0;
         while (cur_guard_pos.x >= 0 && cur_guard_pos.y >= 0 &&
                cur_guard_pos.x < map_size.x && cur_guard_pos.y < map_size.y)
         {
-            // If the guard has already visited this position, we've created a loop and will never exit
-            // TODO: Check vector
-            if (visited.find(cur_guard_pos.to_index(map_size.x)) !=
-                visited.end())
-                return -1;
+            auto pos_index = cur_guard_pos.to_index(map_size.x);
 
             // Record this position
-            visited.insert(cur_guard_pos.to_index(map_size.x));
+            visited.insert(pos_index);
 
             // Turn 90 degrees until no obstacle
             while (obstacles.find(
@@ -34,9 +35,20 @@ namespace aoc
 
             // Proceed
             cur_guard_pos += guard_dir;
+
+            // Cycle check (we could visit all cells from all directions in width * height * 4, so more than that
+            // is a loop).
+            ++moves;
+            if (moves >
+                map_size.x * map_size.y *
+                    static_cast<int>(aoc::grid::Direction::CARDINALS.size()))
+                return std::nullopt;
         }
 
-        return static_cast<int>(visited.size());
+        if (visited.size() == 0)
+            throw std::runtime_error("Can't happen.");
+
+        return visited;
     }
 
     Day06::Day06() : Day(6)
@@ -81,11 +93,42 @@ namespace aoc
     {
         return num_positions_until_exit(std::get<0>(input),
                                         std::get<1>(input),
-                                        std::get<2>(input));
+                                        std::get<2>(input))
+            ->size();
     }
 
-    Day06::Solution2Type Day06::part2([[maybe_unused]] const InputType &input)
+    Day06::Solution2Type Day06::part2(const InputType &input)
     {
-        return "Not yet solved.";
+        auto guard_start = std::get<0>(input);
+        auto obstacles = std::get<1>(input);
+        size_t s = obstacles.size();
+        auto size = std::get<2>(input);
+        auto path = *num_positions_until_exit(guard_start, obstacles, size);
+
+        std::unordered_set<size_t> visited;
+        size_t loops_found = 0;
+        for (auto &pos_idx : path)
+        {
+            if (visited.find(pos_idx) != visited.end())
+                throw std::runtime_error("Broke hash set.");
+
+            visited.insert(pos_idx);
+
+            if (pos_idx == guard_start.to_index(size.x))
+                continue;
+
+            if (obstacles.find(pos_idx) != obstacles.end())
+                throw std::runtime_error("Original path had obstacles...");
+
+            obstacles.insert(pos_idx);
+            if (!num_positions_until_exit(guard_start, obstacles, size))
+                ++loops_found;
+
+            obstacles.erase(pos_idx);
+            if (obstacles.size() != s)
+                throw std::runtime_error("foo.");
+        }
+
+        return loops_found;
     }
 } // namespace aoc

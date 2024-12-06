@@ -11,7 +11,7 @@ namespace aoc::grid
         enum class Type
         {
             NONE = 0,
-            UP = 1,
+            UP,
             UP_RIGHT,
             RIGHT,
             DOWN_RIGHT,

@@ -9,8 +9,7 @@ namespace aoc
     class Day06 : public Day<std::tuple<aoc::grid::Point,
                                         std::unordered_set<size_t>,
                                         aoc::grid::Point>,
-                             int,
-                             std::string>
+                             size_t>
     {
     public:
         Day06();
