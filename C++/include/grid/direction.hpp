@@ -50,6 +50,7 @@ namespace aoc::grid
 
     private:
         Direction(Type type, int dx, int dy);
+        Direction();
 
         Type m_type;
         int m_dx;

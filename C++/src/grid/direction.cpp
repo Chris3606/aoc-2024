@@ -42,6 +42,11 @@ namespace aoc::grid
                                                         LEFT,
                                                         UP_LEFT};
 
+    Direction::Direction()
+        : m_type(Direction::NONE.type()), m_dx(Direction::NONE.dx()),
+          m_dy(Direction::NONE.dy())
+    {
+    }
     Direction::Direction(Type type, int dx, int dy)
         : m_type(type), m_dx(dx), m_dy(dy)
     {

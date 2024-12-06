@@ -3,6 +3,10 @@
 
 namespace aoc::grid
 {
+    Point::Point() : x(), y()
+    {
+    }
+
     Point::Point(int x, int y) : x(x), y(y)
     {
     }
