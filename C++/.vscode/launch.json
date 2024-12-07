@@ -10,7 +10,7 @@
             "name": "AoC Runner",
             "program": "${workspaceFolder}/zig-out/bin/aoc",
             "args": [
-                "5",
+                "6",
                 "-s"
             ],
             "cwd": "${workspaceFolder}"

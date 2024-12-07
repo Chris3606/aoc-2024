@@ -8,6 +8,7 @@ namespace aoc::grid
     struct Point
     {
     public:
+        Point();
         Point(int x, int y);
 
         size_t to_index(size_t width) const;

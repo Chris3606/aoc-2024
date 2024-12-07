@@ -11,7 +11,7 @@ namespace aoc::grid
         enum class Type
         {
             NONE = 0,
-            UP = 1,
+            UP,
             UP_RIGHT,
             RIGHT,
             DOWN_RIGHT,
@@ -50,6 +50,7 @@ namespace aoc::grid
 
     private:
         Direction(Type type, int dx, int dy);
+        Direction();
 
         Type m_type;
         int m_dx;
