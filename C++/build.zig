@@ -38,7 +38,7 @@ pub fn build(b: *std.Build) !void {
     });
     exe.addCSourceFiles(.{
         .files = try collect_c_sources("src", b),
-        .flags = &[_][]const u8{ "-Wall", "-Wextra", "-Wpedantic", "-Werror" },
+        .flags = &[_][]const u8{ "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-std=c++20" },
     });
     exe.linkLibCpp();
     exe.addIncludePath(b.path("include/"));
