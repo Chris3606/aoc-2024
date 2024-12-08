@@ -47,7 +47,7 @@ public sealed class Day06 : BaseDay
             if (!visited.ContainsKey(curGuardPos))
                 visited.Add(curGuardPos, []);
             
-            // If we have have visited this position before from the same direction, then we're stuck in a loop.
+            // If we have visited this position before from the same direction, then we're stuck in a loop.
             var list = visited[curGuardPos];
             if (list.Contains(curGuardDir))
                 return null;
