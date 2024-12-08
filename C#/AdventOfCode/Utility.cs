@@ -1,4 +1,7 @@
-﻿namespace AdventOfCode;
+﻿using SadRogue.Primitives;
+using SadRogue.Primitives.GridViews;
+
+namespace AdventOfCode;
 
 /// <summary>
 /// Utility (extension) methods for common AoC operations.
@@ -36,4 +39,14 @@ public static class Utility
     /// <returns>An enumerator of the elements.</returns>
     public static IEnumerable<T> ParseList<T>(this string value, char separator, Func<string, T> parser, StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries)
         => value.Split(separator, splitOptions).Select(parser);
+
+    public static ArrayView<char> ParseCharGrid(this string value)
+    {
+        var str = value.Replace("\r", "");
+        int width = str.IndexOf('\n');
+        return new ArrayView<char>(str.Replace("\n", "").ToCharArray(), width);
+    }
+
+    public static Point Multiply(this Direction dir, int value)
+        => new Point(dir.DeltaX * value, dir.DeltaY * value);
 }
