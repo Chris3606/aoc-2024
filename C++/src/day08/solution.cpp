@@ -35,15 +35,6 @@ namespace aoc
 
     Day08::Solution1Type Day08::part1(const InputType &input)
     {
-        // for (auto &pair : input.first)
-        // {
-        //     std::cout << pair.first << ": ";
-        //     for (auto &p : pair.second)
-        //         std::cout << "(" << p.x << ", " << p.y << "), ";
-
-        //     std::cout << std::endl;
-        // }
-
         std::unordered_set<size_t> antinode_positions;
         for (auto &antenna_pair : input.first)
         {
@@ -55,7 +46,7 @@ namespace aoc
                         antenna_pair.second[j].x - antenna_pair.second[i].x,
                         antenna_pair.second[j].y - antenna_pair.second[i].y);
 
-                    // An antinode would appear at either end of the line between them, basically alone both the slope and the
+                    // An antinode would appear at either end of the line between them, basically along both the slope and the
                     // inverse
                     aoc::grid::Point antinode = antenna_pair.second[j] + slope;
                     if (antinode.x >= 0 && antinode.y >= 0 &&
@@ -88,8 +79,7 @@ namespace aoc
                         antenna_pair.second[j].x - antenna_pair.second[i].x,
                         antenna_pair.second[j].y - antenna_pair.second[i].y);
 
-                    // An antinode would appear at either end of the line between them, basically alone both the slope and the
-                    // inverse
+                    // An antinode would appear on anything which is on the line between them for part 2 (including the starts)
                     aoc::grid::Point antinode = antenna_pair.second[j];
                     while (antinode.x >= 0 && antinode.y >= 0 &&
                            antinode.x < input.second.x &&
