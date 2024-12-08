@@ -49,4 +49,11 @@ public static class Utility
 
     public static Point Multiply(this Direction dir, int value)
         => new Point(dir.DeltaX * value, dir.DeltaY * value);
+
+    public static IEnumerable<string> ToLines(this string str)
+    {
+        using var reader = new StringReader(str);
+        while (reader.ReadLine() is { } line)
+            yield return line;
+    }
 }
