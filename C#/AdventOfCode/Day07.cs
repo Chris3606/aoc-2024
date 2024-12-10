@@ -19,7 +19,7 @@ public readonly record struct Equation(long TestValue, int[] Operands)
                 return false;
 
             bool multOrAdd = CanBeTrue(testValue, aggregate + operands[0], operands[1..], useConcats) 
-                             || CanBeTrue(testValue, aggregate * operands[0], operands[1..], useConcats);
+                             || CanBeTrue(testValue, (aggregate == 0 ? 1 : aggregate) * operands[0], operands[1..], useConcats);
             if (multOrAdd || !useConcats)
                 return multOrAdd;
 
