@@ -10,31 +10,33 @@ public sealed class Day11 : BaseDay
     }
 
     public override ValueTask<string> Solve_1()
+     => new(_originalNumbers.Sum(i => GetNumbersRecursive(i, 25, new())).ToString());
+
+    public override ValueTask<string> Solve_2()
+        => new(_originalNumbers.Sum(i => GetNumbersRecursive(i, 75, new())).ToString());
+
+    private static long GetNumbersRecursive(long number, int iterations, Dictionary<(long num, int iterations), long> cache)
     {
-        var list = _originalNumbers.ToList();
-        var newList = new List<long>();
-        for (int i = 0; i < 25; i++)
+        if (iterations == 0)
+            return 1;
+        
+        if (cache.ContainsKey((number, iterations)))
+            return cache[(number, iterations)];
+
+        if (number == 0)
+            cache[(number, iterations)] = GetNumbersRecursive(1, iterations - 1, cache);
+        
+        else if (number.ToString().Length % 2 == 0)
         {
-            foreach (long elem in list)
-            {
-                if (elem == 0)
-                    newList.Add(1);
-                else if (elem.ToString().Length % 2 == 0)
-                {
-                    var digits = elem.ToString();
-                    newList.Add(long.Parse(digits[0..(digits.Length / 2)]));
-                    newList.Add(long.Parse(digits[(digits.Length / 2)..]));
-                }
-                else
-                    newList.Add(elem * 2024);
-            }
+            var digits = number.ToString();
 
-            (list, newList) = (newList, list);
-            newList.Clear();
+            cache[(number, iterations)] =
+                GetNumbersRecursive(long.Parse(digits[..(digits.Length / 2)]), iterations - 1, cache) +
+                GetNumbersRecursive(long.Parse(digits[(digits.Length / 2)..]), iterations - 1, cache);
         }
-
-        return new(list.Count.ToString());
+        else
+            cache[(number, iterations)] = GetNumbersRecursive(number * 2024, iterations - 1, cache);
+        
+        return cache[(number, iterations)];
     }
-
-    public override ValueTask<string> Solve_2() => throw new NotImplementedException();
 }
