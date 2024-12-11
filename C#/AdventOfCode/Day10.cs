@@ -20,38 +20,55 @@ public sealed class Day10 : BaseDay
         int sum = 0;
         foreach (var pos in _grid.Positions().Where(p => _grid[p] == 0))
         {
-            int trailheadScore = 0;
-            var points = new Queue<Point>();
-            points.Enqueue(pos);
-            var visited = new HashSet<Point>();
-            while (points.Count > 0)
-            {
-                var point = points.Dequeue();
-                if (visited.Contains(point) || Distance.Manhattan.Calculate(pos, point) > 9)
-                    continue;
-                
-                visited.Add(point);
-
-                if (_grid[point] == 9)
-                {
-                    trailheadScore++;
-                    continue;
-                }
-
-                foreach (var neighbor in ((AdjacencyRule)Distance.Manhattan)
-                         .Neighbors(point)
-                         .Where(p => _grid.Contains(p) && !visited.Contains(p)))
-                {
-                    if (_grid[neighbor] - _grid[point] == 1)
-                        points.Enqueue(neighbor);
-                }
-            }
+            var endpoints = new HashSet<Point>();
+            var list = new List<Point>();
+            GetTrailEndpoints(new HashSet<Point>(), pos, 9, list);
+            endpoints.AddRange(list.Where(p => _grid[p] == 9));
             
-            sum += trailheadScore;
+            sum += endpoints.Count;
         }
 
         return new(sum.ToString());
     }
 
-    public override ValueTask<string> Solve_2() => throw new NotImplementedException();
+    public override ValueTask<string> Solve_2()
+    {
+        {
+            int sum = 0;
+            foreach (var pos in _grid.Positions().Where(p => _grid[p] == 0))
+            {
+                var list = new List<Point>();
+                GetTrailEndpoints(new HashSet<Point>(), pos, 9, list);
+            
+                sum += list.Count(p => _grid[p] == 9);
+            }
+
+            return new(sum.ToString());
+        }
+    }
+
+    private void GetTrailEndpoints(HashSet<Point> prevPath, Point curPoint, int depth, List<Point> endpoints)
+    {
+        if (prevPath.Count == depth)
+        {
+            endpoints.Add(curPoint);
+            return;
+        }
+
+        prevPath.Add(curPoint);
+        foreach (var neighbor in ((AdjacencyRule)Distance.Manhattan).Neighbors(curPoint))
+        {
+            if (!_grid.Contains(neighbor))
+                continue;
+            
+            if (prevPath.Contains(neighbor))
+                continue;
+            
+            if (_grid[neighbor] - _grid[curPoint] != 1)
+                continue;
+            
+            GetTrailEndpoints(prevPath, neighbor, depth, endpoints);
+        }
+        prevPath.Remove(curPoint);
+    }
 }
