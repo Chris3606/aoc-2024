@@ -13,34 +13,14 @@ public sealed class Day12 : BaseDay
     }
 
     public override ValueTask<string> Solve_1()
-    {
-        var areas = FindAreas(_grid);
-
-        int sum = 0;
-        foreach (var areasList in areas.Values)
-            foreach (var area in areasList)
-                sum += area.Count * Perimeter(area);
-        
-        return new(sum.ToString());
-    }
+        => new(FindAreas(_grid).Sum(a => a.Count * Perimeter(a)).ToString());
 
     public override ValueTask<string> Solve_2()
+        => new(FindAreas(_grid).Sum(a => a.Count * NumSides(a)).ToString());
+
+    private static IEnumerable<Area> FindAreas(IGridView<char> grid)
     {
-        var areas = FindAreas(_grid);
-
-        int sum = 0;
-        foreach (var pair in areas)
-            foreach (var area in pair.Value)
-                sum += area.Count * NumSides(area);
-
-        return new(sum.ToString());
-    }
-
-    private static Dictionary<char, List<Area>> FindAreas(IGridView<char> grid)
-    {
-        Dictionary<char, List<Area>> areas = new();
-        
-        HashSet<Point> visited = new();
+        HashSet<Point> visited = [];
         
         foreach (var pos in grid.Positions())
         {
@@ -63,14 +43,9 @@ public sealed class Day12 : BaseDay
                              .Where(p => grid.Contains(p) && !visited.Contains(p) && grid[p] == grid[point]))
                     stack.Push(neighbor);
             }
-            
-            if (!areas.ContainsKey(grid[pos]))
-                areas.Add(grid[pos], []);
-            
-            areas[grid[pos]].Add(area);
-        }
 
-        return areas;
+            yield return area;
+        }
     }
 
     private static int Perimeter(IReadOnlyArea area)
